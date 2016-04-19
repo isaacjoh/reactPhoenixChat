@@ -28,10 +28,13 @@ let Dashboard = React.createClass({
       .receive("ok", () => { console.log(`Succesfully joined the ${this.state.activeRoom} chat room.`) })
       .receive("error", () => { console.log(`Unable to join the ${this.state.activeRoom} chat room.`) })
     channel.on("message", payload => {
+      payload.body.sender = "others",
+      console.log(payload.body);
       this.setState({messages: this.state.messages.concat([payload.body])})
     })
   },
   handleMessageSubmit(message) {
+    console.log(message);
     this.state.channel.push("message", {body: message})
   },
   handleRoomLinkClick(room) {
@@ -105,7 +108,7 @@ let MessageList = React.createClass({
 let Message = React.createClass({
   render() {
     return (
-      <div>
+      <div className={this.props.data.sender === "self" ? "msg-name-date" : "msg-name-date msg-name-date-alt pink"}>
         <div>{this.props.data.text}</div>
         <div>{this.props.data.date}</div>
       </div>
@@ -119,7 +122,7 @@ let MessageInput = React.createClass({
     let text = React.findDOMNode(this.refs.text).value.trim()
     let date = (new Date()).toLocaleTimeString()
     React.findDOMNode(this.refs.text).value = ""
-    this.props.onMessageSubmit({text: text, date: date})
+    this.props.onMessageSubmit({text: text, date: date, sender: "self"})
   },
   render() {
     return (
